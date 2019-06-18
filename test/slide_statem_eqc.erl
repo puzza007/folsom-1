@@ -42,6 +42,12 @@
 
 -define(WINDOW, 60).
 
+-ifdef(use_rand).
+-define(RANDOM, rand).
+-else.
+-define(RANDOM, random).
+-endif.
+
 -record(state, {moment=1000,
                 sample,
                 name,
@@ -146,7 +152,7 @@ new_histo() ->
     {Ref, Slide}.
 
 tick(Moment) ->
-    IncrBy = trunc(random:uniform(10)),
+    IncrBy = trunc(?RANDOM:uniform(10)),
     meck:expect(folsom_utils, now_epoch, fun() -> Moment + IncrBy end),
     Moment+IncrBy.
 

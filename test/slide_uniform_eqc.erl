@@ -41,6 +41,12 @@
 -define(WINDOW, 60).
 -define(SIZE, 5).
 
+-ifdef(use_rand).
+-define(RANDOM, rand).
+-else.
+-define(RANDOM, random).
+-endif.
+
 -record(state, {moment=1000,
                 sample,
                 name,
@@ -148,7 +154,7 @@ new_histo() ->
     {Ref, Slide}.
 
 tick(Moment) ->
-    IncrBy = trunc(random:uniform(10)),
+    IncrBy = trunc(?RANDOM:uniform(10)),
     meck:expect(folsom_utils, now_epoch, fun() -> Moment + IncrBy end),
     meck:expect(folsom_utils, now_epoch, fun(_Now) -> Moment + IncrBy end),
     Moment+IncrBy.
@@ -178,7 +184,7 @@ new_state_values(_Sample, Moment, Values, Val, Count) ->
     case Cnt > ?SIZE of
         true ->
             %% replace
-            {Rnd, _} = random:uniform_s(Cnt, get(timestamp)),
+            {Rnd, _} = ?RANDOM:uniform_s(Cnt, get(timestamp)),
             case Rnd =< ?SIZE of
                 true ->
                     lists:keyreplace({Moment, Rnd}, 1, Values, {{Moment, Rnd}, Val});
